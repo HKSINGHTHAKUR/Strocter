@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Lock file
+package-lock.json
+
+# IDE
+.vscode/
+
+# OS files
+Thumbs.db
+.DS_Store

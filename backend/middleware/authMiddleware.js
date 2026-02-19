@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-const protect = (req, res, next) => {
+const protect = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -11,7 +12,21 @@ const protect = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded.id;
+
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(401).json({ message: "User not found" });
+        }
+
+        // Check trial expiry
+        const trialExpiry = new Date(user.trialStartDate);
+        trialExpiry.setDate(trialExpiry.getDate() + 7);
+
+        if (new Date() > trialExpiry && !user.subscriptionActive) {
+            return res.status(403).json({ message: "Free trial expired. Please subscribe." });
+        }
+
+        req.user = user;
         next();
     } catch (error) {
         return res.status(401).json({ message: "Token failed" });
@@ -19,3 +34,4 @@ const protect = (req, res, next) => {
 };
 
 module.exports = { protect };
+

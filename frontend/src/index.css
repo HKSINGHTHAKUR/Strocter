@@ -1,0 +1,274 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #0B0D10;
+  --color-bg-secondary: #0F1118;
+  --color-card-bg: rgba(255, 255, 255, 0.04);
+  --color-card-border: rgba(255, 255, 255, 0.08);
+  --color-card-hover: rgba(255, 255, 255, 0.07);
+  --color-accent: #6366F1;
+  --color-accent-purple: #6E33B1;
+  --color-accent-orange: #FF6A00;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A0A3B1;
+  --color-text-muted: #5A5D6B;
+  --color-sidebar-bg: rgba(255, 255, 255, 0.02);
+  --color-sidebar-border: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Base ───────────────────────────────────── */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+}
+
+body {
+  background-color: #0B0D10;
+  color: #FFFFFF;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ── Noise Grain Overlay ────────────────────── */
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* ── Atmospheric Background ─────────────────── */
+
+.atmo-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.atmo-glow-purple {
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 800px;
+  height: 800px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(110, 51, 177, 0.15) 0%, transparent 70%);
+  filter: blur(80px);
+  animation: glowDrift 20s ease-in-out infinite alternate;
+}
+
+.atmo-glow-orange {
+  position: absolute;
+  bottom: -20%;
+  left: -10%;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 106, 0, 0.08) 0%, transparent 70%);
+  filter: blur(100px);
+  animation: glowDrift 25s ease-in-out infinite alternate-reverse;
+}
+
+.atmo-beam {
+  position: absolute;
+  top: 10%;
+  left: 30%;
+  width: 1px;
+  height: 60%;
+  background: linear-gradient(to bottom, transparent, rgba(99, 102, 241, 0.06), transparent);
+  transform: rotate(15deg);
+  filter: blur(40px);
+}
+
+@keyframes glowDrift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(30px, -20px) scale(1.05);
+  }
+}
+
+/* ── Glass Card ─────────────────────────────── */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 60px rgba(99, 102, 241, 0.04);
+}
+
+/* ── Sidebar ────────────────────────────────── */
+
+.sidebar {
+  width: 72px;
+  background: rgba(255, 255, 255, 0.02);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.sidebar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 0;
+  color: #5A5D6B;
+  font-size: 10px;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.sidebar-item:hover,
+.sidebar-item.active {
+  color: #FFFFFF;
+}
+
+.sidebar-item.active {
+  position: relative;
+}
+
+.sidebar-item.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 25%;
+  height: 50%;
+  width: 2px;
+  background: #6366F1;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── Top Nav ────────────────────────────────── */
+
+.topnav {
+  height: 64px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(11, 13, 16, 0.8);
+}
+
+/* ── AI Insight Accent Line ─────────────────── */
+
+.ai-accent-line {
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(to bottom, #6366F1, #6E33B1, transparent);
+  min-height: 100%;
+}
+
+/* ── Chart Glass ────────────────────────────── */
+
+.chart-glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+}
+
+/* ── Table Row Hover ────────────────────────── */
+
+.txn-row {
+  transition: background 0.2s;
+  border-radius: 12px;
+}
+
+.txn-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ── Fade In Animation ──────────────────────── */
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out both;
+}
+
+.fade-in-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.fade-in-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.fade-in-delay-3 {
+  animation-delay: 0.3s;
+}
+
+.fade-in-delay-4 {
+  animation-delay: 0.4s;
+}
+
+.fade-in-delay-5 {
+  animation-delay: 0.5s;
+}
+
+.fade-in-delay-6 {
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Scrollbar ──────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

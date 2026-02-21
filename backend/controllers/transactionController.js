@@ -2,7 +2,7 @@ const Transaction = require("../models/Transaction");
 
 exports.addTransaction = async (req, res) => {
     try {
-        const { amount, type, category, note, emotion, tags } = req.body;
+        const { amount, type, category, note, emotion, tags, createdAt } = req.body;
 
         const newTransaction = await Transaction.create({
             user: req.user,
@@ -12,6 +12,7 @@ exports.addTransaction = async (req, res) => {
             note,
             emotion,
             tags,
+            ...(createdAt && { createdAt: new Date(createdAt) }),
         });
 
         res.status(201).json({

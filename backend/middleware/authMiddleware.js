@@ -18,14 +18,6 @@ const protect = async (req, res, next) => {
             return res.status(401).json({ message: "User not found" });
         }
 
-        // Check trial expiry
-        const trialExpiry = new Date(user.trialStartDate);
-        trialExpiry.setDate(trialExpiry.getDate() + 7);
-
-        if (new Date() > trialExpiry && !user.subscriptionActive) {
-            return res.status(403).json({ message: "Free trial expired. Please subscribe." });
-        }
-
         req.user = user;
         next();
     } catch (error) {

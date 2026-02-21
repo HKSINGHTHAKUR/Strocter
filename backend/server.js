@@ -31,6 +31,7 @@ app.use("/", require("./routes/healthRoute"));
 app.use("/api/auth", require("./routes/authRoute"));
 app.use("/api/transactions", require("./routes/transactionRoute"));
 app.use("/api/subscription", require("./routes/subscriptionRoute"));
+app.use("/api/insights", require("./routes/insightRoute"));
 
 // ---------- 404 Handler ----------
 app.use((_req, res) => {

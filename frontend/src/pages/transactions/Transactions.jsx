@@ -8,6 +8,7 @@ import {
     getTransactionMetrics,
     getTransactionHistory,
 } from "../../services/transactionsService";
+import { exportTransactionsCSV } from "../../services/downloadHelper";
 
 export default function Transactions() {
     const [metrics, setMetrics] = useState(null);
@@ -18,6 +19,7 @@ export default function Transactions() {
     const [historyLoading, setHistoryLoading] = useState(true);
     const [error, setError] = useState("");
     const [historyError, setHistoryError] = useState("");
+    const [exporting, setExporting] = useState(false);
     const [mouse, setMouse] = useState({ x: 0, y: 0 });
 
     /* ── Fetch metrics on mount ── */
@@ -69,6 +71,17 @@ export default function Transactions() {
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && (!pagination || newPage <= pagination.totalPages)) {
             setPage(newPage);
+        }
+    };
+
+    const handleExportReport = async () => {
+        setExporting(true);
+        try {
+            await exportTransactionsCSV();
+        } catch (err) {
+            console.error("Export error:", err);
+        } finally {
+            setExporting(false);
         }
     };
 
@@ -124,7 +137,7 @@ export default function Transactions() {
             <TopNav />
 
             {/* ── Main Content ── */}
-            <main className="ml-[72px] pt-[64px] relative z-10">
+            <main className="ml-[88px] pt-[64px] relative z-10">
                 <div className="max-w-[1200px] mx-auto px-8 py-10 overflow-y-auto">
                     <div className="space-y-8">
                         {/* ── Page Header ── */}
@@ -201,21 +214,29 @@ export default function Transactions() {
                                     </div>
 
                                     {/* Report */}
-                                    <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent-orange text-white text-sm font-medium hover:bg-accent-orange/90 transition-colors cursor-pointer">
-                                        <svg
-                                            width="14"
-                                            height="14"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                        >
-                                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                                            <polyline points="7 10 12 15 17 10" />
-                                            <line x1="12" y1="15" x2="12" y2="3" />
-                                        </svg>
-                                        Report
+                                    <button
+                                        onClick={handleExportReport}
+                                        disabled={exporting}
+                                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent-orange text-white text-sm font-medium hover:bg-accent-orange/90 transition-colors cursor-pointer disabled:opacity-50"
+                                    >
+                                        {exporting ? (
+                                            <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                                        ) : (
+                                            <svg
+                                                width="14"
+                                                height="14"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                            >
+                                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                                <polyline points="7 10 12 15 17 10" />
+                                                <line x1="12" y1="15" x2="12" y2="3" />
+                                            </svg>
+                                        )}
+                                        {exporting ? "Exporting..." : "Report"}
                                     </button>
                                 </div>
                             </div>

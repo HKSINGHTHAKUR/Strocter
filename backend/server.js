@@ -18,7 +18,11 @@ connectDB();
 const app = express();
 
 // ---------- Global Middleware ----------
-app.use(cors());
+app.use(cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+    exposedHeaders: ["Content-Disposition"],
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -37,6 +41,8 @@ app.use("/api/impulse", require("./routes/impulseRoutes"));
 app.use("/api/wealth", require("./routes/wealthRoutes"));
 app.use("/api/goals", require("./routes/goalsRoutes"));
 app.use("/api/settings", require("./routes/settingsRoutes"));
+app.use("/api/archive", require("./routes/archiveRoutes"));
+app.use("/api/reports", require("./routes/reportRoutes"));
 
 // ---------- 404 Handler ----------
 app.use((_req, res) => {

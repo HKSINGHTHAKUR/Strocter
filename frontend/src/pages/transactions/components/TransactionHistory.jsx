@@ -137,10 +137,10 @@ export default function TransactionHistory({
                                                         />
                                                     </div>
                                                     <span className={`text-xs font-medium ${txn.impactLabel === "High Risk"
-                                                            ? "text-accent-orange"
-                                                            : txn.impactLabel === "Moderate"
-                                                                ? "text-amber-500"
-                                                                : "text-emerald-400"
+                                                        ? "text-accent-orange"
+                                                        : txn.impactLabel === "Moderate"
+                                                            ? "text-amber-500"
+                                                            : "text-emerald-400"
                                                         }`}>
                                                         {txn.impactLabel}
                                                     </span>
@@ -149,7 +149,7 @@ export default function TransactionHistory({
 
                                             {/* Value */}
                                             <td className="py-4 text-sm font-semibold text-right">
-                                                ${txn.value?.toFixed(2)}
+                                                ₹{txn.value?.toFixed(2)}
                                             </td>
                                         </tr>
                                     );

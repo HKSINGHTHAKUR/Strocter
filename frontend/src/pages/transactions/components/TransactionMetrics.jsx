@@ -34,7 +34,7 @@ export default function TransactionMetrics({ metrics }) {
             />
             <MetricCard
                 label="High Risk Spending"
-                value={`$${highRisk.toLocaleString()}`}
+                value={`₹${highRisk.toLocaleString()}`}
                 delay={3}
             />
 

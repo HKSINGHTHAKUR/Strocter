@@ -15,9 +15,11 @@
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.1.0",
     "mongoose": "^9.2.1",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "pdfkit": "^0.17.2"
   }
 }

@@ -6,6 +6,7 @@ const transactionSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: [true, "User reference is required"],
+            index: true,
         },
         amount: {
             type: Number,
@@ -23,6 +24,7 @@ const transactionSchema = new mongoose.Schema(
             type: String,
             required: [true, "Category is required"],
             trim: true,
+            index: true,
         },
         note: {
             type: String,
@@ -39,11 +41,16 @@ const transactionSchema = new mongoose.Schema(
         createdAt: {
             type: Date,
             default: Date.now,
+            index: true,
         },
     },
     {
         timestamps: true,
     }
 );
+
+// Compound index for common queries
+transactionSchema.index({ user: 1, createdAt: -1 });
+transactionSchema.index({ user: 1, category: 1, createdAt: -1 });
 
 module.exports = mongoose.model("Transaction", transactionSchema);

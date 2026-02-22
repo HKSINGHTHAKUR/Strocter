@@ -31,9 +31,9 @@ const RISK_ACCENT = {
 /* ── Value formatter ── */
 const formatValue = (value) => {
     if (value == null) return "—";
-    const formatter = new Intl.NumberFormat("en-US", {
+    const formatter = new Intl.NumberFormat("en-IN", {
         style: "currency",
-        currency: "USD",
+        currency: "INR",
         minimumFractionDigits: 2,
     });
     return formatter.format(Math.abs(value));

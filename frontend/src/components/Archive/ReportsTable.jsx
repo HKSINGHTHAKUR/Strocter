@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import { exportTransactionsCSV } from "../../services/downloadHelper";
+import { useState } from "react";
 
 const RISK_COLORS = {
     LOW: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
@@ -7,6 +9,19 @@ const RISK_COLORS = {
 };
 
 export default function ReportsTable({ reports }) {
+    const [downloading, setDownloading] = useState(null);
+
+    const handleDownload = async (reportId) => {
+        setDownloading(reportId);
+        try {
+            await exportTransactionsCSV();
+        } catch (err) {
+            console.error("Download error:", err);
+        } finally {
+            setDownloading(null);
+        }
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -30,7 +45,7 @@ export default function ReportsTable({ reports }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {reports.map((row, i) => (
+                            {reports.map((row) => (
                                 <tr
                                     key={row.id}
                                     className="border-b border-white/[0.03] last:border-0 hover:bg-white/[0.02] transition-colors duration-200 cursor-pointer"
@@ -46,10 +61,18 @@ export default function ReportsTable({ reports }) {
                                     </td>
                                     <td className="px-5 py-4 text-[11px] text-text-muted">{row.confidence}%</td>
                                     <td className="px-5 py-4">
-                                        <button className="text-text-muted hover:text-[#ec5b13] transition-colors">
-                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3" />
-                                            </svg>
+                                        <button
+                                            onClick={() => handleDownload(row.id)}
+                                            disabled={downloading === row.id}
+                                            className="text-text-muted hover:text-[#ec5b13] transition-colors disabled:opacity-50 cursor-pointer"
+                                        >
+                                            {downloading === row.id ? (
+                                                <div className="w-4 h-4 rounded-full border-2 border-[#ec5b13] border-t-transparent animate-spin" />
+                                            ) : (
+                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3" />
+                                                </svg>
+                                            )}
                                         </button>
                                     </td>
                                 </tr>

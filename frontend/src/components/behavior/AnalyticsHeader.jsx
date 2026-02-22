@@ -1,10 +1,23 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { exportAnalyticsCSV } from "../../services/downloadHelper";
 
 const PERIODS = ["Weekly", "Monthly", "Quarterly"];
 
 export default function AnalyticsHeader() {
     const [activePeriod, setActivePeriod] = useState("Monthly");
+    const [exporting, setExporting] = useState(false);
+
+    const handleExport = async () => {
+        setExporting(true);
+        try {
+            await exportAnalyticsCSV();
+        } catch (err) {
+            console.error("Export report error:", err);
+        } finally {
+            setExporting(false);
+        }
+    };
 
     return (
         <motion.div
@@ -30,8 +43,8 @@ export default function AnalyticsHeader() {
                             key={period}
                             onClick={() => setActivePeriod(period)}
                             className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${activePeriod === period
-                                    ? "bg-[#ec5b13] text-white shadow-lg shadow-[#ec5b13]/30"
-                                    : "text-text-muted hover:text-white"
+                                ? "bg-[#ec5b13] text-white shadow-lg shadow-[#ec5b13]/30"
+                                : "text-text-muted hover:text-white"
                                 }`}
                         >
                             {period}
@@ -40,21 +53,29 @@ export default function AnalyticsHeader() {
                 </div>
 
                 {/* Export Report */}
-                <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#ec5b13] text-white text-xs font-semibold hover:bg-[#ec5b13]/90 transition-colors cursor-pointer shadow-lg shadow-[#ec5b13]/20">
-                    <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"
-                        />
-                    </svg>
-                    Export Report
+                <button
+                    onClick={handleExport}
+                    disabled={exporting}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#ec5b13] text-white text-xs font-semibold hover:bg-[#ec5b13]/90 transition-colors cursor-pointer shadow-lg shadow-[#ec5b13]/20 disabled:opacity-50"
+                >
+                    {exporting ? (
+                        <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                    ) : (
+                        <svg
+                            className="w-3.5 h-3.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"
+                            />
+                        </svg>
+                    )}
+                    {exporting ? "Exporting..." : "Export Report"}
                 </button>
             </div>
         </motion.div>

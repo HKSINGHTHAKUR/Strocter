@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { getIntelligenceFeed } from "../../../services/dashboardService";
 import IntelligenceCard from "../../../components/intelligence/IntelligenceCard";
+import { exportTransactionsCSV } from "../../../services/downloadHelper";
 
 export default function IntelligenceFeed() {
     const [feedData, setFeedData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [exporting, setExporting] = useState(false);
 
     useEffect(() => {
         const fetchFeed = async () => {
@@ -22,6 +24,17 @@ export default function IntelligenceFeed() {
         fetchFeed();
     }, []);
 
+    const handleExport = async () => {
+        setExporting(true);
+        try {
+            await exportTransactionsCSV();
+        } catch (err) {
+            console.error("Export ledger error:", err);
+        } finally {
+            setExporting(false);
+        }
+    };
+
     return (
         <div className="fade-in fade-in-delay-6">
             {/* Header */}
@@ -32,8 +45,12 @@ export default function IntelligenceFeed() {
                         AI-analyzed transaction insights
                     </p>
                 </div>
-                <button className="text-xs text-accent-orange font-medium hover:underline cursor-pointer">
-                    Export Ledger
+                <button
+                    onClick={handleExport}
+                    disabled={exporting}
+                    className="text-xs text-accent-orange font-medium hover:underline cursor-pointer disabled:opacity-50"
+                >
+                    {exporting ? "Exporting..." : "Export Ledger"}
                 </button>
             </div>
 

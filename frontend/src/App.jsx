@@ -8,6 +8,7 @@ import WealthStability from "./pages/wealth/WealthStability";
 import Archive from "./pages/archive/Archive";
 import Goals from "./pages/goals/Goals";
 import Settings from "./pages/settings/Settings";
+import Pricing from "./pages/pricing/Pricing";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       <Route path="/archive" element={<Archive />} />
       <Route path="/goals" element={<Goals />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/pricing" element={<Pricing />} />
     </Routes>
   );
 }

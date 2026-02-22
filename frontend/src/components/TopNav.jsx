@@ -1,21 +1,36 @@
+import { useNavigate } from "react-router-dom";
+import { useSubscription } from "../context/SubscriptionContext";
+import SubscriptionStatusBadge from "./Pricing/SubscriptionStatusBadge";
+
 export default function TopNav() {
+    const navigate = useNavigate();
+    const { isPremium, isTrial, loading } = useSubscription();
+
     return (
-        <header className="topnav fixed top-0 left-[72px] right-0 z-20 flex items-center justify-between px-8">
-            {/* Left: Search */}
-            <div className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5A5D6B" strokeWidth="1.5" strokeLinecap="round">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                <input
-                    type="text"
-                    placeholder="Search psychological data..."
-                    className="bg-transparent outline-none text-sm text-text-secondary placeholder-text-muted w-56"
-                />
+        <header className="topnav fixed top-0 left-[88px] right-0 z-20 flex items-center justify-between px-8">
+            {/* Left: Brand */}
+            <div className="flex items-center gap-3">
+                <img src="/assets/logo.png" alt="Strocter" className="w-8 h-8 object-contain" />
+                <span className="text-lg font-bold tracking-[0.25em] uppercase text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    Strocter
+                </span>
             </div>
 
             {/* Right: Actions */}
             <div className="flex items-center gap-5">
+                {/* Upgrade button (only for free users after trial) */}
+                {!loading && !isPremium && !isTrial && (
+                    <button
+                        onClick={() => navigate("/pricing")}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#ec5b13] text-white text-xs font-semibold hover:bg-[#ec5b13]/90 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-[#ec5b13]/25 cursor-pointer"
+                    >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                        Upgrade
+                    </button>
+                )}
+
                 {/* Notification */}
                 <button className="relative p-2 text-text-muted hover:text-white transition-colors cursor-pointer">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -30,9 +45,11 @@ export default function TopNav() {
                     <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-xs font-semibold text-accent">
                         JS
                     </div>
-                    <div className="hidden lg:block">
-                        <p className="text-sm font-medium leading-tight">Julian Sterling</p>
-                        <p className="text-[10px] text-accent-orange font-medium uppercase tracking-wider">Premium User</p>
+                    <div className="hidden lg:flex items-center gap-2">
+                        <div>
+                            <p className="text-sm font-medium leading-tight">Julian Sterling</p>
+                            {!loading && <SubscriptionStatusBadge />}
+                        </div>
                     </div>
                 </div>
             </div>

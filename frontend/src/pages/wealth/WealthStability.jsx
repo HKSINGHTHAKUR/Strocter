@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Sidebar from "../../components/Sidebar";
 import TopNav from "../../components/TopNav";
+import PremiumGate from "../../components/PremiumGate";
 import WealthHeader from "../../components/Wealth/WealthHeader";
 import StabilityMetricsRow from "../../components/Wealth/StabilityMetricsRow";
 import StabilityTrendChart from "../../components/Wealth/StabilityTrendChart";
@@ -79,56 +80,58 @@ export default function WealthStability() {
     }, []);
 
     return (
-        <div className="min-h-screen">
-            {/* ── Atmospheric Background ── */}
-            <div className="atmo-bg">
-                <div className="atmo-glow-purple" style={{ transform: `translate(${mouse.x * 30}px, ${mouse.y * 20}px)` }} />
-                <div className="atmo-glow-orange" style={{ transform: `translate(${mouse.x * -20}px, ${mouse.y * -15}px)` }} />
-                <div className="atmo-beam" />
-            </div>
-            <div className="noise-overlay" />
-
-            <Sidebar />
-            <TopNav />
-
-            <main className="ml-[72px] pt-[64px] relative z-10">
-                <div className="max-w-[1400px] mx-auto px-10 py-8 overflow-y-auto">
-                    {loading ? (
-                        <div className="flex items-center justify-center py-32">
-                            <div className="w-8 h-8 rounded-full border-2 border-[#38E6A2] border-t-transparent animate-spin" />
-                        </div>
-                    ) : (
-                        <div className="space-y-6">
-                            {/* ── Header ── */}
-                            <WealthHeader range={range} onRangeChange={handleRangeChange} />
-
-                            {/* ── Metrics ── */}
-                            <StabilityMetricsRow data={overview} />
-
-                            {/* ── Trend Chart ── */}
-                            <StabilityTrendChart
-                                trendData={trendResult.trend}
-                                forecastedIndex={trendResult.forecastedIndex}
-                                resilienceDelta={trendResult.resilienceDelta}
-                                loading={trendLoading}
-                            />
-
-                            {/* ── Radar + Allocation ── */}
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                                <RiskRadarChart
-                                    radarData={radarResult.radar}
-                                    criticalFactor={radarResult.criticalFactor}
-                                    status={radarResult.status}
-                                />
-                                <AssetAllocationPanel allocation={allocation} />
-                            </div>
-
-                            {/* ── Strategic Outlook ── */}
-                            <StrategicGrowthOutlook outlook={outlook} />
-                        </div>
-                    )}
+        <PremiumGate>
+            <div className="min-h-screen">
+                {/* ── Atmospheric Background ── */}
+                <div className="atmo-bg">
+                    <div className="atmo-glow-purple" style={{ transform: `translate(${mouse.x * 30}px, ${mouse.y * 20}px)` }} />
+                    <div className="atmo-glow-orange" style={{ transform: `translate(${mouse.x * -20}px, ${mouse.y * -15}px)` }} />
+                    <div className="atmo-beam" />
                 </div>
-            </main>
-        </div>
+                <div className="noise-overlay" />
+
+                <Sidebar />
+                <TopNav />
+
+                <main className="ml-[88px] pt-[64px] relative z-10">
+                    <div className="max-w-[1400px] mx-auto px-10 py-8 overflow-y-auto">
+                        {loading ? (
+                            <div className="flex items-center justify-center py-32">
+                                <div className="w-8 h-8 rounded-full border-2 border-[#38E6A2] border-t-transparent animate-spin" />
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {/* ── Header ── */}
+                                <WealthHeader range={range} onRangeChange={handleRangeChange} />
+
+                                {/* ── Metrics ── */}
+                                <StabilityMetricsRow data={overview} />
+
+                                {/* ── Trend Chart ── */}
+                                <StabilityTrendChart
+                                    trendData={trendResult.trend}
+                                    forecastedIndex={trendResult.forecastedIndex}
+                                    resilienceDelta={trendResult.resilienceDelta}
+                                    loading={trendLoading}
+                                />
+
+                                {/* ── Radar + Allocation ── */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                                    <RiskRadarChart
+                                        radarData={radarResult.radar}
+                                        criticalFactor={radarResult.criticalFactor}
+                                        status={radarResult.status}
+                                    />
+                                    <AssetAllocationPanel allocation={allocation} />
+                                </div>
+
+                                {/* ── Strategic Outlook ── */}
+                                <StrategicGrowthOutlook outlook={outlook} />
+                            </div>
+                        )}
+                    </div>
+                </main>
+            </div>
+        </PremiumGate>
     );
 }

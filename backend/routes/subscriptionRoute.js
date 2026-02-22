@@ -1,8 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const { activateSubscription } = require("../controllers/subscriptionController");
 const { protect } = require("../middleware/authMiddleware");
+const {
+    getSubscriptionStatus,
+    createIntro,
+    confirmPayment,
+    cancelSubscription,
+} = require("../controllers/subscriptionController");
 
-router.post("/activate", protect, activateSubscription);
+router.get("/status", protect, getSubscriptionStatus);
+router.post("/create-intro", protect, createIntro);
+router.post("/confirm-payment", protect, confirmPayment);
+router.post("/cancel", protect, cancelSubscription);
 
 module.exports = router;

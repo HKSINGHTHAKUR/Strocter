@@ -1,4 +1,5 @@
 const Transaction = require("../models/Transaction");
+const { recalculateAfterTransaction } = require("../services/systemRecalculationService");
 
 /* ── Helpers (shared with intelligenceFeedController) ── */
 
@@ -43,6 +44,9 @@ exports.addTransaction = async (req, res) => {
             tags,
             ...(createdAt && { createdAt: new Date(createdAt) }),
         });
+
+        // Fire-and-forget recalculation
+        recalculateAfterTransaction(req.user._id, newTransaction, "create").catch(() => { });
 
         res.status(201).json({
             success: true,

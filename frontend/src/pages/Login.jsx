@@ -27,7 +27,10 @@ export default function Login() {
                 onSubmit={handleLogin}
                 className="bg-card-bg rounded-xl p-8 w-full max-w-sm"
             >
-                <h1 className="text-2xl font-bold mb-6">Login</h1>
+                <div className="flex flex-col items-center mb-6">
+                    <img src="/assets/logo.png" alt="Strocter" className="w-14 h-14 object-contain mb-3" />
+                    <h1 className="text-2xl font-bold">Login</h1>
+                </div>
 
                 {error && (
                     <p className="text-red-400 text-sm mb-4">{error}</p>

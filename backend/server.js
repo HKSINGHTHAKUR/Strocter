@@ -32,6 +32,11 @@ app.use("/api/auth", require("./routes/authRoute"));
 app.use("/api/transactions", require("./routes/transactionRoute"));
 app.use("/api/subscription", require("./routes/subscriptionRoute"));
 app.use("/api/insights", require("./routes/insightRoute"));
+app.use("/api/analytics", require("./routes/analyticsRoute"));
+app.use("/api/impulse", require("./routes/impulseRoutes"));
+app.use("/api/wealth", require("./routes/wealthRoutes"));
+app.use("/api/goals", require("./routes/goalsRoutes"));
+app.use("/api/settings", require("./routes/settingsRoutes"));
 
 // ---------- 404 Handler ----------
 app.use((_req, res) => {

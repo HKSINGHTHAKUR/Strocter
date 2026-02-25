@@ -19,7 +19,7 @@ const app = express();
 
 // ---------- Global Middleware ----------
 app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
     credentials: true,
     exposedHeaders: ["Content-Disposition"],
 }));
@@ -43,6 +43,7 @@ app.use("/api/goals", require("./routes/goalsRoutes"));
 app.use("/api/settings", require("./routes/settingsRoutes"));
 app.use("/api/archive", require("./routes/archiveRoutes"));
 app.use("/api/reports", require("./routes/reportRoutes"));
+app.use("/api/payment", require("./routes/paymentRoutes"));
 
 // ---------- 404 Handler ----------
 app.use((_req, res) => {

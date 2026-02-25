@@ -6,7 +6,7 @@ import TopNav from "../../components/TopNav";
 import PricingCard from "../../components/Pricing/PricingCard";
 import FeatureComparisonTable from "../../components/Pricing/FeatureComparisonTable";
 import { useSubscription } from "../../context/SubscriptionContext";
-import { createIntroOrder, confirmPayment } from "../../services/subscriptionService";
+import api from "../../services/api";
 
 const FREE_FEATURES = [
     { label: "Basic Dashboard", included: true },
@@ -42,19 +42,31 @@ export default function Pricing() {
     const handleUpgrade = async () => {
         setUpgrading(true);
         try {
-            // Step 1: Create order
-            const order = await createIntroOrder();
+            const { data: order } = await api.post("/payment/create-order");
 
-            // Step 2: In production, launch Razorpay here with order.orderId
-            // For now (pre-Razorpay): simulate payment confirmation
-            await confirmPayment({
-                paymentId: order.orderId,
-                provider: "razorpay",
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                amount: order.amount,
+                currency: order.currency,
+                name: "Strocter Premium",
+                description: "Premium Subscription",
+                order_id: order.id,
+                handler: async function (response) {
+                    await api.post("/payment/verify", response);
+                    await refresh();
+                    navigate("/dashboard");
+                },
+                theme: {
+                    color: "#FF6A00"
+                }
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.on("payment.failed", function (response) {
+                console.error("Payment failed", response.error);
+                alert("Payment failed. Please try again.");
             });
-
-            // Step 3: Refresh subscription state
-            await refresh();
-            navigate("/dashboard");
+            rzp.open();
         } catch (err) {
             console.error("Upgrade error:", err);
             alert("Upgrade failed. Please try again.");

@@ -1,0 +1,31 @@
+
+> frontend@0.0.0 build
+> vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 61 modules transformed.
+[31m✗[39m Build failed in 717ms
+[31merror during build:
+[31m[vite:esbuild] Transform failed with 1 error:
+C:/Users/harsh/OneDrive/Desktop/Strocter/frontend/src/components/Landing/IntelligenceSection.jsx:4:53: ERROR: Expected ")" but found ":"[31m
+file: [36mC:/Users/harsh/OneDrive/Desktop/Strocter/frontend/src/components/Landing/IntelligenceSection.jsx:4:53[31m
+[33m
+[33mExpected ")" but found ":"[33m
+2  |  import { motion, useInView, animate } from 'framer-motion';
+3  |  
+4  |  function CountUp({ target, suffix = '', prefix = '' }: { target: number; suffix?: string; prefix?: string }) {
+   |                                                       ^
+5  |    const [count, setCount] = useState(0);
+6  |    const ref = useRef<HTMLSpanElement>(null);
+[31m
+    at failureErrorWithLog (C:\Users\harsh\OneDrive\Desktop\Strocter\frontend\node_modules\esbuild\lib\main.js:1467:15)
+    at C:\Users\harsh\OneDrive\Desktop\Strocter\frontend\node_modules\esbuild\lib\main.js:736:50
+    at responseCallbacks.<computed> (C:\Users\harsh\OneDrive\Desktop\Strocter\frontend\node_modules\esbuild\lib\main.js:603:9)
+    at handleIncomingPacket (C:\Users\harsh\OneDrive\Desktop\Strocter\frontend\node_modules\esbuild\lib\main.js:658:12)
+    at Socket.readFromStdout (C:\Users\harsh\OneDrive\Desktop\Strocter\frontend\node_modules\esbuild\lib\main.js:581:7)
+    at Socket.emit (node:events:513:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Readable.push (node:internal/streams/readable:390:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)[39m

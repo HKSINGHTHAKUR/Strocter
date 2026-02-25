@@ -1,5 +1,7 @@
 import { Routes, Route } from "react-router-dom";
+import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import ProtectedRoute from "./routes/ProtectedRoute";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Transactions from "./pages/transactions/Transactions";
 import BehavioralAnalytics from "./pages/behavioral/BehavioralAnalytics";
@@ -13,16 +15,20 @@ import Pricing from "./pages/pricing/Pricing";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/transactions" element={<Transactions />} />
-      <Route path="/analytics" element={<BehavioralAnalytics />} />
-      <Route path="/impulse-ai" element={<ImpulseLab />} />
-      <Route path="/wealth" element={<WealthStability />} />
-      <Route path="/archive" element={<Archive />} />
-      <Route path="/goals" element={<Goals />} />
-      <Route path="/settings" element={<Settings />} />
-      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/transactions" element={<Transactions />} />
+        <Route path="/analytics" element={<BehavioralAnalytics />} />
+        <Route path="/impulse-ai" element={<ImpulseLab />} />
+        <Route path="/wealth" element={<WealthStability />} />
+        <Route path="/archive" element={<Archive />} />
+        <Route path="/goals" element={<Goals />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/pricing" element={<Pricing />} />
+      </Route>
     </Routes>
   );
 }

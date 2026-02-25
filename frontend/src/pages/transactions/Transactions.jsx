@@ -9,8 +9,11 @@ import {
     getTransactionHistory,
 } from "../../services/transactionsService";
 import { exportTransactionsCSV } from "../../services/downloadHelper";
+import AddTransactionModal from "../../components/modals/AddTransactionModal";
+import { Plus } from "lucide-react";
 
 export default function Transactions() {
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [metrics, setMetrics] = useState(null);
     const [history, setHistory] = useState([]);
     const [pagination, setPagination] = useState(null);
@@ -23,38 +26,52 @@ export default function Transactions() {
     const [mouse, setMouse] = useState({ x: 0, y: 0 });
 
     /* ── Fetch metrics on mount ── */
-    useEffect(() => {
-        const fetchMetrics = async () => {
-            try {
-                const data = await getTransactionMetrics();
-                setMetrics(data);
-            } catch (err) {
-                setError(err.response?.data?.message || "Failed to load metrics");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchMetrics();
+    const fetchMetrics = useCallback(async () => {
+        try {
+            const data = await getTransactionMetrics();
+            setMetrics(data);
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to load metrics");
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    /* ── Fetch history on page change ── */
+    /* ── Fetch metrics on mount ── */
     useEffect(() => {
-        const fetchHistory = async () => {
-            setHistoryLoading(true);
-            try {
-                const data = await getTransactionHistory(page, 10);
-                setHistory(data.history ?? []);
-                setPagination(data.pagination ?? null);
-            } catch (err) {
-                setHistoryError(
-                    err.response?.data?.message || "Failed to load transactions"
-                );
-            } finally {
-                setHistoryLoading(false);
-            }
-        };
-        fetchHistory();
+        fetchMetrics();
+    }, [fetchMetrics]);
+
+    /* ── Fetch history on page change ── */
+    const fetchHistory = useCallback(async () => {
+        setHistoryLoading(true);
+        try {
+            const data = await getTransactionHistory(page, 10);
+            setHistory(data.history ?? []);
+            setPagination(data.pagination ?? null);
+        } catch (err) {
+            setHistoryError(
+                err.response?.data?.message || "Failed to load transactions"
+            );
+        } finally {
+            setHistoryLoading(false);
+        }
     }, [page]);
+
+    useEffect(() => {
+        fetchHistory();
+    }, [fetchHistory]);
+
+    /* ── Handle Modal Success ── */
+    const handleTransactionAdded = () => {
+        setIsAddModalOpen(false);
+        if (page === 1) {
+            fetchHistory(); // refresh current page
+        } else {
+            setPage(1); // will trigger fetchHistory due to dependency
+        }
+        fetchMetrics(); // refresh the top counters
+    };
 
     /* ── Parallax mouse tracking ── */
     const handleMouseMove = useCallback((e) => {
@@ -213,6 +230,15 @@ export default function Transactions() {
                                         </span>
                                     </div>
 
+                                    {/* Add Transaction Button */}
+                                    <button
+                                        onClick={() => setIsAddModalOpen(true)}
+                                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white text-sm font-medium transition-colors cursor-pointer"
+                                    >
+                                        <Plus size={16} className="text-accent-orange" />
+                                        <span>Add</span>
+                                    </button>
+
                                     {/* Report */}
                                     <button
                                         onClick={handleExportReport}
@@ -259,6 +285,13 @@ export default function Transactions() {
                     </div>
                 </div>
             </main>
+
+            {/* ── Modals ── */}
+            <AddTransactionModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSuccess={handleTransactionAdded}
+            />
         </div>
     );
 }

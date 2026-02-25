@@ -78,4 +78,28 @@ const loginUser = async (req, res) => {
     }
 };
 
-module.exports = { register, loginUser };
+// @desc    Get current logged in user
+// @route   GET /api/auth/me
+// @access  Private
+const getMe = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({
+            success: true,
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                trialActive: user.trialActive,
+                subscriptionActive: user.subscriptionActive,
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+module.exports = { register, loginUser, getMe };

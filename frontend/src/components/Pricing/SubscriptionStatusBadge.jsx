@@ -5,8 +5,8 @@ export default function SubscriptionStatusBadge() {
 
     if (isPremium) {
         return (
-            <span className="px-2.5 py-1 rounded-lg bg-[#ec5b13]/15 border border-[#ec5b13]/25 text-[#ec5b13] text-[10px] font-bold uppercase tracking-wider">
-                Premium
+            <span className="bg-orange-500/20 text-orange-400 px-3 py-1 rounded-full text-xs">
+                PREMIUM
             </span>
         );
     }

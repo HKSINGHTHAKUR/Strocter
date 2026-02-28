@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
             } catch (error) {
                 console.error("Auth fetch failed:", error);
                 localStorage.removeItem("token");
+                localStorage.removeItem("user");
                 setUser(null);
             } finally {
                 setLoading(false);
@@ -38,6 +39,7 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error("Login session fetch failed:", error);
             localStorage.removeItem("token");
+            localStorage.removeItem("user");
             setUser(null);
             throw error;
         }
@@ -45,6 +47,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
         setUser(null);
     };
 

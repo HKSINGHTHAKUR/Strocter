@@ -93,18 +93,6 @@ const navItems = [
             </SidebarIcon>
         ),
     },
-    {
-        label: "Strocter AI",
-        to: "/strocter-ai",
-        premium: true,
-        icon: (
-            <SidebarIcon>
-                <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" />
-                <path d="M10 21h4" />
-                <path d="M9 17h6" />
-            </SidebarIcon>
-        ),
-    },
 ];
 
 export default function Sidebar() {

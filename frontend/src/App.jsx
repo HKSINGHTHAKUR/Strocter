@@ -10,7 +10,6 @@ import Archive from "./pages/archive/Archive";
 import Goals from "./pages/goals/Goals";
 import Settings from "./pages/settings/Settings";
 import Pricing from "./pages/pricing/Pricing";
-import StrocterAI from "./pages/ai/StrocterAI";
 
 function App() {
   return (
@@ -27,7 +26,6 @@ function App() {
         <Route path="/goals" element={<Goals />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/pricing" element={<Pricing />} />
-        <Route path="/strocter-ai" element={<StrocterAI />} />
       </Route>
     </Routes>
   );

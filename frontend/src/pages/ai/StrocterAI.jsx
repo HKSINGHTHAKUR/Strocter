@@ -13,6 +13,11 @@ export default function StrocterAI() {
 
     const [analytics, setAnalytics] = useState(null);
     const [analyticsLoading, setAnalyticsLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        requestAnimationFrame(() => setMounted(true));
+    }, []);
 
     /* ── Fetch analytics once on mount ── */
     useEffect(() => {
@@ -20,16 +25,14 @@ export default function StrocterAI() {
 
         const fetchAnalytics = async () => {
             try {
-                const [behavioralRes, impulseRes, lateNightRes] = await Promise.all([
+                const [behavioralRes, impulseRes] = await Promise.all([
                     api.get("/analytics/behavioral-summary"),
-                    api.get("/impulse/overview"),
                     api.get("/impulse/overview"),
                 ]);
 
                 const behavioral = behavioralRes.data;
                 const impulse = impulseRes.data;
 
-                // Build unified analytics summary
                 setAnalytics({
                     impulseScore: impulse.impulseScore?.score ?? 0,
                     controlScore: parseFloat(behavioral.resilienceScore?.value) || 0,
@@ -53,44 +56,61 @@ export default function StrocterAI() {
     }, [hasAccess]);
 
     return (
-        <div className="flex min-h-screen bg-[#0a0a0a]">
+        <div className="flex min-h-screen bg-[#07070a]">
             <Sidebar />
             <div className="flex-1 ml-[var(--sidebar-width)] flex flex-col">
                 <TopNav />
-                <main className="flex-1 flex flex-col p-6 pt-[calc(var(--topnav-height)+1.5rem)]">
+                <main className="flex-1 flex flex-col px-6 lg:px-8 pt-[calc(var(--topnav-height)+1rem)] pb-4">
                     {!hasAccess ? (
                         <PremiumGate featureName="Strocter AI" />
                     ) : (
-                        <>
+                        <div
+                            className={`flex flex-col flex-1 min-h-0 transition-all duration-700 ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
+                                }`}
+                        >
                             {/* Page Header */}
-                            <div className="mb-6">
-                                <h1 className="text-2xl font-light text-white tracking-tight">
-                                    Strocter{" "}
-                                    <span className="bg-gradient-to-r from-[#ec5b13] to-[#ff8a50] bg-clip-text text-transparent font-medium">
-                                        AI
-                                    </span>
-                                </h1>
-                                <p className="text-[#555] text-sm mt-1">
-                                    Financial Intelligence Center
-                                </p>
-                            </div>
-
-                            {/* Two-column layout */}
-                            <div className="flex-1 flex flex-col lg:flex-row gap-5 min-h-0">
-                                {/* LEFT — Behavioral Intelligence Panel */}
-                                <div className="lg:w-[45%] flex-shrink-0 min-h-[400px] lg:min-h-0">
-                                    <AnalyticsPanel
-                                        analytics={analytics}
-                                        loading={analyticsLoading}
-                                    />
+                            <div className="mb-5 flex items-end justify-between">
+                                <div>
+                                    <h1 className="text-2xl font-semibold text-white tracking-tight">
+                                        Strocter{" "}
+                                        <span className="bg-gradient-to-r from-[#ec5b13] to-[#ff8a50] bg-clip-text text-transparent">
+                                            AI
+                                        </span>
+                                    </h1>
+                                    <p className="text-neutral-500 text-xs mt-1 tracking-wide">
+                                        Financial Intelligence Command Center
+                                    </p>
                                 </div>
-
-                                {/* RIGHT — AI Chat Interface */}
-                                <div className="lg:flex-1 min-h-[500px] lg:min-h-0">
-                                    <AIChat />
+                                <div className="flex items-center gap-2 text-neutral-600 text-xs">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    System Active
                                 </div>
                             </div>
-                        </>
+
+                            {/* Grid Layout */}
+                            <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 min-h-0">
+                                {/* LEFT — Intelligence Panel (5 cols) */}
+                                <div
+                                    className={`lg:col-span-5 min-h-[400px] lg:min-h-0 transition-all duration-500 ease-out delay-100 ${mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                                        }`}
+                                >
+                                    <AnalyticsPanel analytics={analytics} loading={analyticsLoading} />
+                                </div>
+
+                                {/* Vertical Divider */}
+                                <div className="hidden lg:flex items-center justify-center">
+                                    <div className="w-px h-[85%] bg-gradient-to-b from-transparent via-neutral-700/50 to-transparent" />
+                                </div>
+
+                                {/* RIGHT — AI Chat (7 cols - 1 for divider = 6) */}
+                                <div
+                                    className={`lg:col-span-6 min-h-[500px] lg:min-h-0 transition-all duration-500 ease-out delay-200 ${mounted ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+                                        }`}
+                                >
+                                    <AIChat analytics={analytics} />
+                                </div>
+                            </div>
+                        </div>
                     )}
                 </main>
             </div>

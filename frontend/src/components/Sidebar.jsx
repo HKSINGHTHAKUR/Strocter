@@ -71,16 +71,6 @@ const navItems = [
         ),
     },
     {
-        label: "Impulse AI",
-        to: "/impulse-ai",
-        premium: true,
-        icon: (
-            <SidebarIcon>
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-            </SidebarIcon>
-        ),
-    },
-    {
         label: "Archive",
         to: "/archive",
         premium: true,
@@ -100,6 +90,18 @@ const navItems = [
             <SidebarIcon>
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 8v8M8 12h8" />
+            </SidebarIcon>
+        ),
+    },
+    {
+        label: "Strocter AI",
+        to: "/strocter-ai",
+        premium: true,
+        icon: (
+            <SidebarIcon>
+                <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" />
+                <path d="M10 21h4" />
+                <path d="M9 17h6" />
             </SidebarIcon>
         ),
     },

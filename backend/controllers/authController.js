@@ -62,8 +62,8 @@ const loginUser = async (req, res) => {
         const token = jwt.sign(
             {
                 id: user._id,
-                trialActive: true,
-                subscriptionActive: false,
+                trialActive: user.trialActive ?? true,
+                subscriptionActive: user.subscriptionActive ?? false,
             },
             process.env.JWT_SECRET,
             { expiresIn: "7d" }

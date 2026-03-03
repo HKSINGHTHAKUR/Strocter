@@ -1,37 +1,65 @@
 import { useState, useRef, useEffect } from "react";
 import { sendAIMessage } from "../../services/aiService";
 
-function getWelcomeMessage(analytics) {
-    const controlScore = analytics?.controlScore;
-    const impulseScore = analytics?.impulseScore;
-
-    let contextLine = "I have access to your real-time behavioral data.";
-    if (controlScore != null && impulseScore != null) {
-        contextLine = `Based on your Control Score of ${controlScore}/10 and Impulse Score of ${impulseScore}/100, I can provide personalized financial psychology insights.`;
-    }
-
-    return {
-        sender: "ai",
-        text: `Welcome to Strocter AI — your financial psychology assistant.\n\n${contextLine}\n\nTry asking:\n• "Why am I overspending recently?"\n• "What triggers my impulse purchases?"\n• "How can I improve my control score?"`,
-    };
+/* ── Typing indicator dots ── */
+function TypingDots() {
+    return (
+        <div className="flex justify-start">
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl rounded-bl-sm px-4 py-3.5 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 bg-[#ec5b13] rounded-full animate-bounce [animation-delay:0ms]" />
+                <span className="w-1.5 h-1.5 bg-[#ec5b13] rounded-full animate-bounce [animation-delay:150ms]" />
+                <span className="w-1.5 h-1.5 bg-[#ec5b13] rounded-full animate-bounce [animation-delay:300ms]" />
+            </div>
+        </div>
+    );
 }
 
-export default function AIChat({ analytics }) {
+/* ── Build compact welcome message from scores ── */
+function buildWelcomeText(analytics) {
+    const cs = analytics?.controlScore;
+    const es = analytics?.emotionalSpendingPct;
+    const is_ = analytics?.impulseScore;
+
+    if (cs == null) return "I have access to your real-time behavioral data. Ask me anything about your financial psychology.";
+
+    let risk = "stable";
+    if (cs < 4) risk = "critically low";
+    else if (cs < 6) risk = "moderate";
+
+    return `Control Score ${cs}/10 · Emotional Spend ${es}% · Impulse ${is_}/100\nBehavioral stability: ${risk}.\n\nTry: "Why am I overspending?" or "How do I improve my control score?"`;
+}
+
+export default function AIChat({ analytics, behavioralContext = "" }) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
+    const [aiStatus, setAiStatus] = useState("analyzing"); // "analyzing" | "ready"
+    const [contextSent, setContextSent] = useState(false);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
 
-    /* Update welcome message when analytics load */
+    /* ── STEP 4: Boot animation — "Analyzing…" then show welcome ── */
     useEffect(() => {
-        setMessages([getWelcomeMessage(analytics)]);
+        if (!analytics) return;
+
+        setAiStatus("analyzing");
+        const timer = setTimeout(() => {
+            setAiStatus("ready");
+            setMessages([{
+                sender: "ai",
+                text: buildWelcomeText(analytics),
+            }]);
+        }, 1500);
+
+        return () => clearTimeout(timer);
     }, [analytics]);
 
+    /* ── Auto-scroll on new messages ── */
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+    }, [messages, aiStatus]);
 
+    /* ── STEP 9: On first user message, inject hidden behavioral context ── */
     const handleSend = async () => {
         const trimmed = input.trim();
         if (!trimmed || loading) return;
@@ -41,7 +69,11 @@ export default function AIChat({ analytics }) {
         setLoading(true);
 
         try {
-            const reply = await sendAIMessage(trimmed);
+            // First message includes hidden behavioral context
+            const context = !contextSent && behavioralContext ? behavioralContext : undefined;
+            if (context) setContextSent(true);
+
+            const reply = await sendAIMessage(trimmed, context);
             setMessages((prev) => [...prev, { sender: "ai", text: reply }]);
         } catch (err) {
             const errorText =
@@ -62,10 +94,20 @@ export default function AIChat({ analytics }) {
         }
     };
 
-    const clearChat = () => setMessages([getWelcomeMessage(analytics)]);
+    const clearChat = () => {
+        setContextSent(false);
+        setAiStatus("analyzing");
+        setTimeout(() => {
+            setAiStatus("ready");
+            setMessages([{
+                sender: "ai",
+                text: buildWelcomeText(analytics),
+            }]);
+        }, 800);
+    };
 
     return (
-        <div className="bg-neutral-900/60 backdrop-blur-xl rounded-2xl border border-neutral-800 flex flex-col h-full min-h-0 overflow-hidden">
+        <div className="bg-neutral-900/50 backdrop-blur-xl rounded-2xl border border-neutral-800 shadow-[0_0_40px_rgba(0,0,0,0.6)] flex flex-col h-full min-h-0 overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06] flex-shrink-0">
                 <div className="flex items-center gap-3">
@@ -80,28 +122,41 @@ export default function AIChat({ analytics }) {
                     </div>
                     <div>
                         <p className="text-sm font-medium text-white">Strocter AI</p>
-                        <p className="text-[10px] text-neutral-500">Financial Psychology Assistant</p>
+                        <p className="text-[10px] text-neutral-500">
+                            {aiStatus === "analyzing" ? "Analyzing…" : "Financial Psychology Assistant"}
+                        </p>
                     </div>
                 </div>
                 <button
                     onClick={clearChat}
-                    className="text-neutral-600 hover:text-neutral-400 text-[10px] uppercase tracking-wider font-semibold transition-colors duration-200"
+                    className="text-neutral-600 hover:text-neutral-400 text-[10px] uppercase tracking-wider font-semibold transition-colors duration-200 cursor-pointer"
                 >
                     Clear
                 </button>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-3 min-h-0 scrollbar-thin">
-                {messages.map((msg, i) => (
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0 scrollbar-thin">
+                {/* Boot: Analyzing state */}
+                {aiStatus === "analyzing" && (
+                    <div className="flex flex-col items-start gap-2">
+                        <p className="text-neutral-500 text-xs italic px-1">Analyzing your behavioral profile…</p>
+                        <TypingDots />
+                    </div>
+                )}
+
+                {/* Messages render only after boot completes */}
+                {aiStatus === "ready" && messages.map((msg, i) => (
                     <div
                         key={i}
                         className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                     >
                         <div
-                            className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed whitespace-pre-wrap ${msg.sender === "user"
-                                    ? "bg-[#ec5b13] text-white rounded-br-sm"
-                                    : "bg-white/[0.03] border border-white/[0.06] text-neutral-300 rounded-bl-sm"
+                            className={`rounded-2xl px-4 py-3 text-[13px] leading-relaxed whitespace-pre-wrap ${msg.sender === "user"
+                                ? "max-w-[80%] bg-[#ec5b13] text-white rounded-br-sm"
+                                : i === 0
+                                    ? "max-w-[90%] bg-white/[0.02] border border-white/[0.04] text-neutral-400 rounded-bl-sm text-xs py-2.5 px-3.5"
+                                    : "max-w-[85%] bg-white/[0.03] border border-white/[0.06] text-neutral-300 rounded-bl-sm"
                                 }`}
                         >
                             {msg.text}
@@ -109,20 +164,12 @@ export default function AIChat({ analytics }) {
                     </div>
                 ))}
 
-                {loading && (
-                    <div className="flex justify-start">
-                        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl rounded-bl-sm px-4 py-3.5 flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 bg-[#ec5b13] rounded-full animate-bounce [animation-delay:0ms]" />
-                            <span className="w-1.5 h-1.5 bg-[#ec5b13] rounded-full animate-bounce [animation-delay:150ms]" />
-                            <span className="w-1.5 h-1.5 bg-[#ec5b13] rounded-full animate-bounce [animation-delay:300ms]" />
-                        </div>
-                    </div>
-                )}
+                {loading && <TypingDots />}
 
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
+            {/* Input — always pinned to bottom */}
             <div className="px-4 pb-4 pt-2 flex-shrink-0">
                 <div className="relative">
                     <input
@@ -132,12 +179,12 @@ export default function AIChat({ analytics }) {
                         onKeyDown={handleKeyDown}
                         placeholder="Ask about your spending behavior..."
                         className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl text-white text-sm placeholder-neutral-600 outline-none pl-4 pr-12 py-3 focus:border-[#ec5b13]/30 focus:ring-1 focus:ring-[#ec5b13]/10 transition-all duration-200"
-                        disabled={loading}
+                        disabled={loading || aiStatus === "analyzing"}
                     />
                     <button
                         onClick={handleSend}
-                        disabled={loading || !input.trim()}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-[#ec5b13] hover:bg-[#d44e0f] disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-200"
+                        disabled={loading || !input.trim() || aiStatus === "analyzing"}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-[#ec5b13] hover:bg-[#d44e0f] disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M22 2L11 13" />

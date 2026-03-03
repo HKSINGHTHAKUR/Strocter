@@ -31,7 +31,7 @@ function AnimatedNumber({ value, suffix = "" }) {
     );
 }
 
-/* ── Progress bar ── */
+/* ── Progress bar (animated) ── */
 function ProgressBar({ value, max = 100, color }) {
     const pct = Math.min(100, (value / max) * 100);
     return (
@@ -44,14 +44,16 @@ function ProgressBar({ value, max = 100, color }) {
     );
 }
 
-/* ── Score card ── */
+/* ── Score card with hover lift ── */
 function ScoreCard({ label, value, suffix = "", sublabel, color = "#ec5b13", maxValue = 100, risk = false }) {
     const numValue = typeof value === "number" ? value : parseFloat(value) || 0;
 
     return (
         <div
-            className={`relative bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.04] hover:-translate-y-0.5 transition-all duration-300 ease-out ${risk ? "ring-1 ring-red-500/20" : ""
-                }`}
+            className={`relative bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 
+                hover:-translate-y-1 hover:shadow-lg hover:bg-white/[0.04] 
+                transition-all duration-300 ease-out cursor-default
+                ${risk ? "ring-1 ring-red-500/20" : ""}`}
         >
             {risk && (
                 <div className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
@@ -85,10 +87,15 @@ function EmotionRow({ emotion, count, total }) {
     );
 }
 
+/* ── Section divider ── */
+function Divider() {
+    return <div className="h-px bg-neutral-800 my-4" />;
+}
+
 export default function AnalyticsPanel({ analytics, loading }) {
     if (loading) {
         return (
-            <div className="bg-neutral-900/60 backdrop-blur-xl rounded-2xl border border-neutral-800 h-full flex items-center justify-center">
+            <div className="bg-neutral-900/70 backdrop-blur-xl rounded-2xl border border-neutral-800 shadow-[0_0_40px_rgba(0,0,0,0.6)] h-full flex items-center justify-center min-h-[400px]">
                 <div className="w-5 h-5 rounded-full border-2 border-[#ec5b13] border-t-transparent animate-spin" />
             </div>
         );
@@ -96,7 +103,7 @@ export default function AnalyticsPanel({ analytics, loading }) {
 
     if (!analytics) {
         return (
-            <div className="bg-neutral-900/60 backdrop-blur-xl rounded-2xl border border-neutral-800 h-full flex items-center justify-center">
+            <div className="bg-neutral-900/70 backdrop-blur-xl rounded-2xl border border-neutral-800 shadow-[0_0_40px_rgba(0,0,0,0.6)] h-full flex items-center justify-center min-h-[400px]">
                 <p className="text-neutral-600 text-sm">No data available</p>
             </div>
         );
@@ -107,15 +114,15 @@ export default function AnalyticsPanel({ analytics, loading }) {
     const isHighRisk = (analytics.impulseScore ?? 0) > 60;
 
     return (
-        <div className="bg-neutral-900/60 backdrop-blur-xl rounded-2xl border border-neutral-800 h-full flex flex-col p-5 overflow-hidden">
+        <div className="bg-neutral-900/70 backdrop-blur-xl rounded-2xl border border-neutral-800 shadow-[0_0_40px_rgba(0,0,0,0.6)] h-auto flex flex-col p-5">
             {/* Panel Header */}
             <div className="mb-5 flex-shrink-0">
                 <h2 className="text-lg font-medium text-white tracking-tight">Behavioral Intelligence</h2>
                 <p className="text-neutral-600 text-[11px] mt-0.5 tracking-wide">Real-time financial psychology metrics</p>
             </div>
 
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto space-y-5 min-h-0 pr-1 scrollbar-thin">
+            {/* Content — no inner scroll, flows naturally */}
+            <div className="space-y-1">
                 {/* Section 1 — Primary Scores */}
                 <div>
                     <p className="text-neutral-600 text-[10px] font-semibold uppercase tracking-[0.12em] mb-2.5">Primary Scores</p>
@@ -139,6 +146,8 @@ export default function AnalyticsPanel({ analytics, loading }) {
                     </div>
                 </div>
 
+                <Divider />
+
                 {/* Section 2 — Spending Patterns */}
                 <div>
                     <p className="text-neutral-600 text-[10px] font-semibold uppercase tracking-[0.12em] mb-2.5">Spending Patterns</p>
@@ -160,37 +169,47 @@ export default function AnalyticsPanel({ analytics, loading }) {
                     </div>
                 </div>
 
-                {/* 30-Day Summary */}
-                <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4">
-                    <div className="flex items-center justify-between mb-1">
-                        <p className="text-neutral-500 text-[10px] font-semibold uppercase tracking-[0.12em]">30-Day Spend</p>
-                        <span className="text-[10px] text-neutral-600 font-mono">{analytics.volatility}</span>
+                <Divider />
+
+                {/* Section 3 — 30-Day Summary */}
+                <div>
+                    <p className="text-neutral-600 text-[10px] font-semibold uppercase tracking-[0.12em] mb-2.5">30-Day Overview</p>
+                    <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                        <div className="flex items-center justify-between mb-1">
+                            <p className="text-neutral-500 text-[10px] font-semibold uppercase tracking-[0.12em]">Total Spend</p>
+                            <span className="text-[10px] text-neutral-600 font-mono">{analytics.volatility}</span>
+                        </div>
+                        <p className="text-xl font-bold text-white">
+                            ₹{(analytics.totalSpentLast30Days || 0).toLocaleString("en-IN")}
+                        </p>
+                        <p className="text-neutral-600 text-[10px] mt-1.5">
+                            Top category: <span className="text-neutral-400">{analytics.topCategory || "N/A"}</span>
+                        </p>
                     </div>
-                    <p className="text-xl font-bold text-white">
-                        ₹{(analytics.totalSpentLast30Days || 0).toLocaleString("en-IN")}
-                    </p>
-                    <p className="text-neutral-600 text-[10px] mt-1.5">
-                        Top category: <span className="text-neutral-400">{analytics.topCategory || "N/A"}</span>
-                    </p>
                 </div>
 
                 {/* Emotion Distribution */}
                 {emotionEntries.length > 0 && (
-                    <div>
-                        <p className="text-neutral-600 text-[10px] font-semibold uppercase tracking-[0.12em] mb-2.5">Emotion Distribution</p>
-                        <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4">
-                            <div className="flex items-center gap-2 mb-3">
-                                <span className="text-base text-white capitalize font-medium">{analytics.topEmotion}</span>
-                                <span className="text-neutral-600 text-[10px]">dominant</span>
-                            </div>
-                            <div className="space-y-0.5">
-                                {emotionEntries.slice(0, 5).map(([emotion, count]) => (
-                                    <EmotionRow key={emotion} emotion={emotion} count={count} total={totalEmotions} />
-                                ))}
+                    <>
+                        <Divider />
+                        <div>
+                            <p className="text-neutral-600 text-[10px] font-semibold uppercase tracking-[0.12em] mb-2.5">Emotion Distribution</p>
+                            <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="text-base text-white capitalize font-medium">{analytics.topEmotion}</span>
+                                    <span className="text-neutral-600 text-[10px]">dominant</span>
+                                </div>
+                                <div className="space-y-0.5">
+                                    {emotionEntries.slice(0, 5).map(([emotion, count]) => (
+                                        <EmotionRow key={emotion} emotion={emotion} count={count} total={totalEmotions} />
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </>
                 )}
+
+                <Divider />
 
                 {/* AI Quick Insight */}
                 <div className="bg-gradient-to-br from-[#ec5b13]/5 to-transparent border border-[#ec5b13]/10 rounded-xl p-4">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Sidebar from "../../components/Sidebar";
 import TopNav from "../../components/TopNav";
 import PremiumGate from "../../components/PremiumGate";
@@ -6,6 +6,34 @@ import AnalyticsPanel from "../../components/StrocterAI/AnalyticsPanel";
 import AIChat from "../../components/StrocterAI/AIChat";
 import { useSubscription } from "../../context/SubscriptionContext";
 import api from "../../services/api";
+
+/* ── Dynamic insight generator ── */
+function generateInsight(analytics) {
+    if (!analytics) return null;
+
+    const parts = [];
+
+    if (analytics.controlScore < 4)
+        parts.push("Critical behavioral risk detected — control score dangerously low.");
+    else if (analytics.controlScore < 6)
+        parts.push("Moderate behavioral instability — control score needs attention.");
+
+    if (analytics.emotionalSpendingPct > 70)
+        parts.push("High emotional spending pattern observed across recent transactions.");
+    else if (analytics.emotionalSpendingPct > 50)
+        parts.push("Elevated emotional spending detected.");
+
+    if ((analytics.impulseScore ?? 0) > 60)
+        parts.push("Impulse instability detected — consider reviewing late-night activity.");
+
+    if (analytics.lateNightSpendingPercent > 30)
+        parts.push("Significant after-hours spending pattern identified.");
+
+    if (parts.length === 0)
+        parts.push("Your behavioral profile is currently stable. Continue maintaining financial discipline.");
+
+    return parts.slice(0, 2).join(" ");
+}
 
 export default function StrocterAI() {
     const { isPremium, isTrial } = useSubscription();
@@ -55,19 +83,27 @@ export default function StrocterAI() {
         fetchAnalytics();
     }, [hasAccess]);
 
+    const insightText = useMemo(() => generateInsight(analytics), [analytics]);
+
+    /* ── Build system context string for AI chat ── */
+    const behavioralContext = useMemo(() => {
+        if (!analytics) return "";
+        return `User behavioral summary: Control Score ${analytics.controlScore}/10, Impulse Score ${analytics.impulseScore}/100, Emotional Spending ${analytics.emotionalSpendingPct}%, Late-Night Spending ${analytics.lateNightSpendingPercent}%, 30-Day Total ₹${(analytics.totalSpentLast30Days || 0).toLocaleString("en-IN")}, Top Emotion: ${analytics.topEmotion}, Top Category: ${analytics.topCategory}, Volatility: ${analytics.volatility}.`;
+    }, [analytics]);
+
     return (
         <div className="min-h-screen bg-[#07070a]">
             <Sidebar />
             <TopNav />
 
-            <main className="ml-[88px] pt-[64px] relative z-10 h-[calc(100vh-0px)]">
+            <main className="ml-[88px] pt-[64px] relative z-10">
                 {!hasAccess ? (
                     <div className="px-10 py-8">
                         <PremiumGate featureName="Strocter AI" />
                     </div>
                 ) : (
                     <div
-                        className={`flex flex-col h-full px-8 py-6 transition-all duration-700 ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
+                        className={`flex flex-col px-8 py-6 transition-all duration-700 ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
                             }`}
                     >
                         {/* Page Header */}
@@ -89,27 +125,41 @@ export default function StrocterAI() {
                             </div>
                         </div>
 
-                        {/* Grid — fills remaining height */}
-                        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 min-h-0 overflow-hidden">
+                        {/* ── STEP 2: AI Insight Snapshot Strip ── */}
+                        {insightText && (
+                            <div
+                                className={`mb-6 rounded-xl border border-orange-500/20 bg-orange-500/[0.04] p-4 flex items-center gap-4 transition-all duration-500 delay-150 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
+                                    }`}
+                            >
+                                <div className="text-orange-400 text-lg flex-shrink-0">⚡</div>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-[0.12em] mb-0.5">AI Insight</p>
+                                    <p className="text-sm text-neutral-300 leading-relaxed">{insightText}</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ── Grid — natural height, page scrolls ── */}
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 min-h-[calc(100vh-220px)]">
                             {/* LEFT — Intelligence Panel (5 cols) */}
                             <div
-                                className={`lg:col-span-5 overflow-hidden transition-all duration-500 ease-out delay-100 ${mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                                className={`lg:col-span-5 transition-all duration-500 ease-out delay-100 ${mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
                                     }`}
                             >
                                 <AnalyticsPanel analytics={analytics} loading={analyticsLoading} />
                             </div>
 
-                            {/* Vertical Divider */}
+                            {/* ── STEP 7: Vertical Panel Divider Glow ── */}
                             <div className="hidden lg:flex items-center justify-center">
-                                <div className="w-px h-[85%] bg-gradient-to-b from-transparent via-neutral-700/50 to-transparent" />
+                                <div className="w-px h-[90%] bg-gradient-to-b from-transparent via-orange-500/20 to-transparent" />
                             </div>
 
                             {/* RIGHT — AI Chat (6 cols) */}
                             <div
-                                className={`lg:col-span-6 overflow-hidden transition-all duration-500 ease-out delay-200 ${mounted ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+                                className={`lg:col-span-6 transition-all duration-500 ease-out delay-200 min-h-[600px] ${mounted ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
                                     }`}
                             >
-                                <AIChat analytics={analytics} />
+                                <AIChat analytics={analytics} behavioralContext={behavioralContext} />
                             </div>
                         </div>
                     </div>

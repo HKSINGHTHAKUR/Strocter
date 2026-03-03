@@ -15,7 +15,7 @@ const { askStrocterAI } = require("../services/strocterAI");
 const chatWithAI = async (req, res) => {
     try {
         const userId = req.user._id;
-        const { message } = req.body;
+        const { message, context } = req.body;
 
         if (!message || typeof message !== "string" || message.trim().length === 0) {
             return res.status(400).json({ success: false, message: "Message is required" });

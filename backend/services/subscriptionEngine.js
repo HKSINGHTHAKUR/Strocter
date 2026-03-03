@@ -47,18 +47,16 @@ async function getFullStatus(userId) {
         User.findById(userId),
     ]);
 
-    const trial = getTrialInfo(user);
-    const isPremium = sub.plan === "premium" && sub.status === "active";
-
+    // TEMPORARY: FREE FOR ALL — report premium for every user
     return {
-        plan: sub.plan,
-        status: sub.status,
-        isPremium,
-        isTrial: !isPremium && trial.isTrial,
-        trialDaysLeft: trial.trialDaysLeft,
-        trialExpired: trial.trialExpired,
-        expiresAt: sub.expiresAt,
-        pricePaid: sub.pricePaid,
+        plan: "premium",
+        status: "active",
+        isPremium: true,
+        isTrial: false,
+        trialDaysLeft: 0,
+        trialExpired: false,
+        expiresAt: null,
+        pricePaid: 0,
     };
 }
 
@@ -140,27 +138,8 @@ async function downgradeUser(userId) {
  * Check if a user has premium access (premium plan OR active trial).
  */
 async function hasPremiumAccess(userId) {
-    const [sub, user] = await Promise.all([
-        getOrCreateSubscription(userId),
-        User.findById(userId),
-    ]);
-
-    // Premium subscriber — check if not expired
-    if (sub.plan === "premium" && sub.status === "active") {
-        if (sub.expiresAt && new Date() > new Date(sub.expiresAt)) {
-            // Auto-downgrade expired premium
-            sub.plan = "free";
-            sub.status = "expired";
-            await sub.save();
-            await User.findByIdAndUpdate(userId, { subscriptionActive: false });
-        } else {
-            return true;
-        }
-    }
-
-    // Within 7-day trial
-    const trial = getTrialInfo(user);
-    return trial.isTrial;
+    // TEMPORARY: FREE FOR ALL — everyone has premium access
+    return true;
 }
 
 module.exports = {

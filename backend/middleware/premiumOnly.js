@@ -1,27 +1,14 @@
 /* ── premiumOnly.js ──
    Middleware: blocks free users whose trial has expired.
    Premium subscribers + active trial users pass through.
+
+   // TEMPORARY: FREE FOR ALL — bypass premium check.
+   // Revert this when payment gateway is added.
 */
 
-const { hasPremiumAccess } = require("../services/subscriptionEngine");
-
 const premiumOnly = async (req, res, next) => {
-    try {
-        const hasAccess = await hasPremiumAccess(req.user._id);
-
-        if (!hasAccess) {
-            return res.status(403).json({
-                message: "Premium subscription required",
-                code: "PREMIUM_REQUIRED",
-                upgradeUrl: "/pricing",
-            });
-        }
-
-        next();
-    } catch (error) {
-        console.error("Premium check error:", error);
-        return res.status(500).json({ message: "Subscription check failed" });
-    }
+    // TEMPORARY: All features free — skip premium check
+    next();
 };
 
 module.exports = { premiumOnly };

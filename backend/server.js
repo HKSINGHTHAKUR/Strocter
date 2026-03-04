@@ -13,11 +13,17 @@ const app = express();
 
 // ---------- Global Middleware ----------
 const corsOptions = {
-    origin: [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://strocter.vercel.app"
-    ],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like server-to-server) or from allowed domains
+        if (!origin ||
+            origin === "http://localhost:5173" ||
+            origin === "http://127.0.0.1:5173" ||
+            origin.endsWith(".vercel.app")) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
     exposedHeaders: ["Content-Disposition"],
 };

@@ -104,7 +104,7 @@ export default function Sidebar() {
         <aside className="sidebar fixed left-0 top-0 h-screen z-30 flex flex-col items-center py-6 justify-between">
             <div className="flex flex-col items-center pt-8">
                 {/* Nav Items */}
-                <nav className="flex flex-col gap-1">
+                <nav className="flex flex-col gap-6">
                     {navItems.map((item) => (
                         <NavLink
                             key={item.label}
@@ -122,7 +122,7 @@ export default function Sidebar() {
                 </nav>
             </div>
 
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-6">
                 {/* Pricing / Upgrade */}
                 <NavLink
                     to="/pricing"

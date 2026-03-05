@@ -10,6 +10,7 @@ import Archive from "./pages/archive/Archive";
 import Goals from "./pages/goals/Goals";
 import Settings from "./pages/settings/Settings";
 import Pricing from "./pages/pricing/Pricing";
+import ChatbotWidget from "./components/ChatbotWidget";
 
 function App() {
   return (
@@ -18,14 +19,14 @@ function App() {
       <Route path="/login" element={<Login />} />
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/transactions" element={<Transactions />} />
-        <Route path="/analytics" element={<BehavioralAnalytics />} />
-        <Route path="/wealth" element={<WealthStability />} />
-        <Route path="/archive" element={<Archive />} />
-        <Route path="/goals" element={<Goals />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/dashboard" element={<><Dashboard /><ChatbotWidget /></>} />
+        <Route path="/transactions" element={<><Transactions /><ChatbotWidget /></>} />
+        <Route path="/analytics" element={<><BehavioralAnalytics /><ChatbotWidget /></>} />
+        <Route path="/wealth" element={<><WealthStability /><ChatbotWidget /></>} />
+        <Route path="/archive" element={<><Archive /><ChatbotWidget /></>} />
+        <Route path="/goals" element={<><Goals /><ChatbotWidget /></>} />
+        <Route path="/settings" element={<><Settings /><ChatbotWidget /></>} />
+        <Route path="/pricing" element={<><Pricing /><ChatbotWidget /></>} />
       </Route>
     </Routes>
   );

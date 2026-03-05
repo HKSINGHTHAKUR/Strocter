@@ -112,7 +112,7 @@ export default function Dashboard() {
             <TopNav />
 
             {/* ── Main Content ── */}
-            <main className="ml-[88px] pt-[64px] relative z-10">
+            <main className="ml-[64px] pt-[64px] relative z-10">
                 <div className="max-w-[1200px] mx-auto px-8 py-10 overflow-y-auto">
                     <div className="space-y-8">
 

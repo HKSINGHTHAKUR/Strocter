@@ -36,7 +36,7 @@ export default function TopNav() {
     const displayName = user?.name || "User";
 
     return (
-        <header className="topnav fixed top-0 left-[88px] right-0 z-20 flex items-center justify-between px-8">
+        <header className="topnav fixed top-0 left-[64px] right-0 z-20 flex items-center justify-between px-8">
             {/* Left: Brand */}
             <div className="flex items-center gap-3">
                 <img src="/assets/logo.png" alt="Strocter" className="w-8 h-8 object-contain" />

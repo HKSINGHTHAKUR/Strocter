@@ -71,7 +71,7 @@ export default function BehavioralAnalytics() {
                 <div className="noise-overlay" />
                 <Sidebar />
                 <TopNav />
-                <main className="ml-[88px] pt-[64px] relative z-10">
+                <main className="ml-[64px] pt-[64px] relative z-10">
                     <div className="max-w-[1400px] mx-auto px-10 py-8 overflow-y-auto">
                         {loading ? (
                             <div className="flex items-center justify-center py-32">

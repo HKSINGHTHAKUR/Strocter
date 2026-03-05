@@ -28,7 +28,7 @@ export default function Pricing() {
             <Sidebar />
             <TopNav />
 
-            <main className="ml-[88px] pt-[72px] px-8 pb-16">
+            <main className="ml-[64px] pt-[72px] px-8 pb-16">
                 {/* Hero */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}

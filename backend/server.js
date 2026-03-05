@@ -12,7 +12,7 @@ connectDB();
 const app = express();
 
 // ---------- Global Middleware ----------
-app.use(cors({
+const corsOptions = {
     origin: [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
@@ -20,8 +20,9 @@ app.use(cors({
     ],
     credentials: true,
     exposedHeaders: ["Content-Disposition"],
-}));
-app.options(/(.*)/, cors());
+};
+app.use(cors(corsOptions));
+app.options(/(.*)/, cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

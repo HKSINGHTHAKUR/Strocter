@@ -286,7 +286,7 @@ graph LR
 
 
 
-### Built with 🧠 by [Harsh K. Singh](https://github.com/your-username)
+### Built with 🧠 by [Harsh K. Singh](https://github.com/HKSINGHTHAKUR)
 
 **Strocter** — *Because understanding your money starts with understanding your mind.*
 

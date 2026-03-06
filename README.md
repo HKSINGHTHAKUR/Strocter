@@ -247,7 +247,7 @@ graph LR
 
 | Service | Platform | Details |
 |---------|----------|---------|
-| **Frontend** | [Vercel](https://vercel.com) | Automatic deployments from `main` branch, edge CDN |
+| **Frontend** | [Vercel]([https://vercel.com](https://strocter.vercel.app/)) | Automatic deployments from `main` branch, edge CDN |
 | **Backend** | [Render](https://render.com) | Auto-deploy with health check at `/health` |
 | **Database** | [MongoDB Atlas](https://mongodb.com/atlas) | M0 free tier or dedicated cluster with auto-scaling |
 

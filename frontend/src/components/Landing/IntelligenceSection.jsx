@@ -24,10 +24,10 @@ function CountUp({ target, suffix = '', prefix = '' }) {
 }
 
 const stats = [
-  { value: 98.7, suffix: '%', label: 'Behavioral Accuracy' },
-  { value: 2400, suffix: '+', label: 'Patterns Detected' },
-  { value: 150, suffix: 'ms', label: 'Response Time' },
-  { value: 99.9, suffix: '%', label: 'Uptime SLA' },
+  { value: 0, suffix: '%', label: 'Behavioral Accuracy (Learning)' },
+  { value: 0, suffix: '', label: 'Patterns Detected' },
+  { value: 200, suffix: 'ms', label: 'Target Response Time' },
+  { value: 99.9, suffix: '%', label: 'Uptime Target' },
 ];
 
 export default function IntelligenceSection() {
@@ -81,10 +81,10 @@ export default function IntelligenceSection() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="label-sm mb-1">Portfolio Overview</p>
-                <p className="text-2xl md:text-3xl font-light text-foreground">₹24,85,400</p>
+                <p className="text-2xl md:text-3xl font-light text-foreground">₹0.00</p>
               </div>
               <div className="flex gap-2">
-                <div className="px-3 py-1.5 rounded-full bg-emerald/10 text-emerald text-xs font-medium">+12.4%</div>
+                <div className="px-3 py-1.5 rounded-full bg-emerald/10 text-emerald text-xs font-medium">0.0%</div>
                 <div className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium">Low Risk</div>
               </div>
             </div>

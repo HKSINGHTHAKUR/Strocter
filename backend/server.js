@@ -3,6 +3,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const session = require("express-session");
+const passport = require("passport");
 const connectDB = require("./config/db");
 const { errorHandler } = require("./middleware/errorHandler");
 
@@ -10,6 +12,27 @@ const { errorHandler } = require("./middleware/errorHandler");
 connectDB();
 
 const app = express();
+
+// Session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "fallback-secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // secure cookies in production
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport config
+require("./config/passport");
 
 // ---------- Global Middleware ----------
 const corsOptions = {

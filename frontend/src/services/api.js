@@ -1,7 +1,15 @@
 import axios from "axios";
 
+// Base URL: VITE_API_URL must NOT include /api suffix — it is appended here.
+// Local:  http://127.0.0.1:5000/api
+// Prod:   https://your-backend.onrender.com/api
+const BASE = import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL.replace(/\/+$/, "")}/api`
+    : "http://127.0.0.1:5000/api";
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api",
+    baseURL: BASE,
+    timeout: 15000,
 });
 
 // Attach JWT from localStorage on every request

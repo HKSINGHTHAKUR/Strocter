@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, User, Loader2, Eye, EyeOff } from "lucide-react";
-import api from "../services/api";
+import api, { API_BASE } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 /* ─── Floating decorative shapes ──────────────────────────────── */
@@ -566,7 +566,7 @@ export default function Login() {
                   type="button"
                   whileTap={{ scale: 0.97 }}
                   onClick={() => {
-                    window.location.href = `${process.env.VITE_API_URL || "http://localhost:5000"}/api/auth/google`;
+                    window.location.href = `${API_BASE}/auth/google`;
                   }}
                   style={{
                     width: "100%",

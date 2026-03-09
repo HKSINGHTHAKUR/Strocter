@@ -3,9 +3,12 @@ import axios from "axios";
 // Base URL: VITE_API_URL must NOT include /api suffix — it is appended here.
 // Local:  http://127.0.0.1:5000/api
 // Prod:   https://your-backend.onrender.com/api
-const BASE = import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL.replace(/\/+$/, "")}/api`
+const envUrl = import.meta.env.VITE_API_URL;
+const BASE = envUrl
+    ? (envUrl.endsWith('/api') ? envUrl : `${envUrl.replace(/\/+$/, "")}/api`)
     : "http://127.0.0.1:5000/api";
+
+export const API_BASE = BASE;
 
 const api = axios.create({
     baseURL: BASE,

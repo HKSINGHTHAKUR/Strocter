@@ -1,8 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./frontend/public/assets/logo-dark.png">
-    <img src="./frontend/public/assets/logo.png" width="140" alt="Strocter Logo" />
-  </picture>
+  <img src="frontend/public/assets/logo.png" width="160" alt="Strocter Logo" />
 </p>
 
 <h1 align="center">Strocter</h1>
@@ -13,24 +10,24 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js" />
-  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript" />
-  <img src="https://img.shields.io/badge/MongoDB-7.0-47A248?style=flat-square&logo=mongodb" />
-  <img src="https://img.shields.io/badge/Razorpay-API-2C67FF?style=flat-square&logo=razorpay" />
-  <img src="https://img.shields.io/badge/License-MIT-2C67FF?style=flat-square" />
+  <img src="https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js" alt="Next.js" />
+  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/MongoDB-7.0-47A248?style=flat-square&logo=mongodb" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/Razorpay-API-2C67FF?style=flat-square&logo=razorpay" alt="Razorpay" />
+  <img src="https://img.shields.io/badge/License-MIT-2C67FF?style=flat-square" alt="MIT License" />
 </p>
 
 ---
 
 ## Overview
 
-Strocter is an enterprise-grade behavioral finance platform that decodes the psychology behind spending decisions using AI-powered cognitive analysis, real-time behavioral scoring, and immersive 3D data visualization.
+**Strocter** is an enterprise-grade behavioral finance platform that decodes the psychology behind spending decisions using AI-powered cognitive analysis, real-time behavioral scoring, and immersive 3D data visualization.
 
 It bridges the gap between **emotional finance** and **mathematical stability** — giving individuals and institutions the tools to understand, predict, and engineer better financial outcomes.
 
 ---
 
-## Platform Workflow
+## 🧠 Platform Workflow
 
 ```mermaid
 flowchart LR
@@ -58,7 +55,7 @@ flowchart LR
 
 ---
 
-## Core Modules
+## ⚡ Core Modules
 
 | Module | Description |
 |--------|-------------|
@@ -71,7 +68,7 @@ flowchart LR
 
 ---
 
-## System Architecture
+## 🏗️ System Architecture
 
 ```mermaid
 flowchart TD
@@ -118,7 +115,7 @@ flowchart TD
 
 ---
 
-## AI Behavioral Pipeline
+## 🤖 AI Behavioral Pipeline
 
 ```mermaid
 sequenceDiagram
@@ -145,7 +142,7 @@ sequenceDiagram
 
 ---
 
-## Payment Flow
+## 💳 Payment Flow
 
 ```mermaid
 flowchart LR
@@ -168,7 +165,7 @@ flowchart LR
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -182,9 +179,9 @@ flowchart LR
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
-```
+```text
 strocter/
 ├── frontend/
 │   └── src/
@@ -206,7 +203,7 @@ strocter/
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -252,7 +249,7 @@ VITE_RAZORPAY_KEY=rzp_live_your_key_id
 
 ---
 
-## Security
+## 🛡️ Security
 
 - JWT authentication with 7-day expiry
 - bcrypt password hashing (12 rounds)
@@ -262,7 +259,7 @@ VITE_RAZORPAY_KEY=rzp_live_your_key_id
 
 ---
 
-## Roadmap
+## 🗺️ Roadmap
 
 ```mermaid
 gantt
@@ -291,9 +288,7 @@ gantt
 
 ---
 
-
-
-## Author
+## 👨‍💻 Author
 
 **Harsh K. Singh** — MERN Developer · AI-Focused Full-Stack Engineer · Behavioral Finance Product Builder
 

@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./public/assets/logo-dark.png">
-    <img src="./public/assets/logo-light.png" alt="Strocter" width="80" />
+    <img src="./public/assets/logo.png" alt="Strocter" width="80" />
   </picture>
 </p>
 
@@ -291,16 +291,7 @@ gantt
 
 ---
 
-## Contributing
 
-Pull requests are welcome. For significant changes, please open an issue first.
-
-1. Fork the repository
-2. Create your branch — `git checkout -b feature/your-feature`
-3. Commit your changes — `git commit -m 'Add your feature'`
-4. Push and open a Pull Request
-
----
 
 ## Author
 

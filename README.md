@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./public/assets/logo-dark.png">
-    <img src="./public/assets/logo.png" alt="Strocter" width="80" />
+    <source media="(prefers-color-scheme: dark)" srcset="./frontend/public/assets/logo-dark.png">
+    <img src="./frontend/public/assets/logo.png" width="140" alt="Strocter Logo" />
   </picture>
 </p>
 

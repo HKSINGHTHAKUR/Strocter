@@ -20,4 +20,8 @@ router.get("/google/callback", authController.googleCallback);
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/reset-password", authController.resetPassword);
 
+// Phone OTP routes
+router.post("/send-otp", authController.sendOtp);
+router.post("/verify-otp", authController.verifyOtp);
+
 module.exports = router;

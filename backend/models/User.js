@@ -9,8 +9,8 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: [true, "Email is required"],
         unique: true,
+        sparse: true,
         trim: true,
         lowercase: true,
         match: [
@@ -20,9 +20,14 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true, "Password is required"],
         minlength: [6, "Password must be at least 6 characters"],
         select: false, // exclude from queries by default
+    },
+    phone: {
+        type: String,
+        unique: true,
+        sparse: true,
+        trim: true,
     },
     googleId: {
         type: String,

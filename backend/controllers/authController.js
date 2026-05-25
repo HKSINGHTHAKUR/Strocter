@@ -4,6 +4,20 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { asyncHandler } = require("../middleware/errorHandler");
 
+// Twilio Verify client (lazy-loaded)
+let twilioClient = null;
+function getTwilioClient() {
+    if (!twilioClient) {
+        const accountSid = process.env.TWILIO_ACCOUNT_SID;
+        const authToken = process.env.TWILIO_AUTH_TOKEN;
+        if (!accountSid || !authToken || accountSid === "your_twilio_account_sid") {
+            throw new Error("Twilio credentials not configured in .env");
+        }
+        twilioClient = require("twilio")(accountSid, authToken);
+    }
+    return twilioClient;
+}
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -107,24 +121,135 @@ const getMe = async (req, res) => {
 // @route   GET /api/auth/google
 // @access  Public
 const googleLogin = (req, res, next) => {
-    // Passport will handle the authentication
-    const auth = require("../config/passport");
-    auth.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+    const passport = require("../config/passport");
+    passport.authenticate("google", { 
+        scope: ["profile", "email"],
+        prompt: "select_account" // Forces Google to show the account picker every time
+    })(req, res, next);
 };
 
 // @desc    Google login callback
 // @route   GET /api/auth/google/callback
 // @access  Public
 const googleCallback = (req, res, next) => {
-    const auth = require("../config/passport");
-    auth.authenticate("google", {
-        failureRedirect: `${process.env.FRONTEND_URL || "http://localhost:5173"}/login`,
-    })(req, res, async (err, user) => {
+    const passport = require("../config/passport");
+    passport.authenticate("google", (err, user, info) => {
+        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+
         if (err || !user) {
-            return res.redirect(
-                `${process.env.FRONTEND_URL || "http://localhost:5173"}/login?error=auth_failed`
-            );
+            console.error("Google OAuth error:", err || info);
+            return res.redirect(`${frontendUrl}/login?error=auth_failed`);
         }
+
+        // Log the user in via Passport session (needed for serializeUser)
+        req.logIn(user, (loginErr) => {
+            if (loginErr) {
+                console.error("Passport login error:", loginErr);
+                return res.redirect(`${frontendUrl}/login?error=auth_failed`);
+            }
+
+            // Generate JWT
+            const token = jwt.sign(
+                {
+                    id: user._id,
+                    trialActive: user.trialActive ?? true,
+                    subscriptionActive: user.subscriptionActive ?? false,
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: "7d" }
+            );
+
+            // Redirect to frontend with token
+            res.redirect(`${frontendUrl}/auth/google/callback?token=${token}`);
+        });
+    })(req, res, next);
+};
+
+// @desc    Send OTP to phone number
+// @route   POST /api/auth/send-otp
+// @access  Public
+const sendOtp = asyncHandler(async (req, res) => {
+    const { phone } = req.body;
+
+    if (!phone) {
+        res.status(400);
+        throw new Error("Phone number is required");
+    }
+
+    // Validate E.164 format (e.g. +919876543210)
+    const e164Regex = /^\+[1-9]\d{6,14}$/;
+    if (!e164Regex.test(phone)) {
+        res.status(400);
+        throw new Error("Phone number must be in E.164 format (e.g. +919876543210)");
+    }
+
+    try {
+        const client = getTwilioClient();
+        const verifySid = process.env.TWILIO_VERIFY_SERVICE_SID;
+
+        if (!verifySid || verifySid === "your_twilio_verify_service_sid") {
+            res.status(500);
+            throw new Error("Twilio Verify service not configured");
+        }
+
+        await client.verify.v2
+            .services(verifySid)
+            .verifications.create({ to: phone, channel: "sms" });
+
+        res.status(200).json({
+            success: true,
+            message: "OTP sent successfully",
+        });
+    } catch (error) {
+        console.error("Twilio send OTP error:", error);
+        if (error.code === 60200) {
+            res.status(400);
+            throw new Error("Invalid phone number");
+        }
+        if (error.code === 60203) {
+            res.status(429);
+            throw new Error("Too many OTP requests. Please wait before trying again.");
+        }
+        res.status(500);
+        throw new Error(error.message || "Failed to send OTP");
+    }
+});
+
+// @desc    Verify OTP and login/register
+// @route   POST /api/auth/verify-otp
+// @access  Public
+const verifyOtp = asyncHandler(async (req, res) => {
+    const { phone, code } = req.body;
+
+    if (!phone || !code) {
+        res.status(400);
+        throw new Error("Phone number and OTP code are required");
+    }
+
+    try {
+        const client = getTwilioClient();
+        const verifySid = process.env.TWILIO_VERIFY_SERVICE_SID;
+
+        const verificationCheck = await client.verify.v2
+            .services(verifySid)
+            .verificationChecks.create({ to: phone, code });
+
+        if (verificationCheck.status !== "approved") {
+            res.status(401);
+            throw new Error("Invalid or expired OTP");
+        }
+
+        // OTP verified — find or create user
+        let user = await User.findOne({ phone });
+
+        if (!user) {
+            // Auto-create user on first phone login
+            user = await User.create({
+                name: `User-${phone.slice(-4)}`,
+                phone,
+            });
+        }
+
         // Generate JWT
         const token = jwt.sign(
             {
@@ -135,12 +260,21 @@ const googleCallback = (req, res, next) => {
             process.env.JWT_SECRET,
             { expiresIn: "7d" }
         );
-        // Redirect to frontend with token
-        res.redirect(
-            `${process.env.FRONTEND_URL || "http://localhost:5173"}/auth/google/callback?token=${token}`
-        );
-    });
-};
+
+        res.status(200).json({
+            success: true,
+            token,
+        });
+    } catch (error) {
+        console.error("Twilio verify OTP error:", error);
+        if (error.status === 404) {
+            res.status(400);
+            throw new Error("OTP expired or not found. Please request a new one.");
+        }
+        if (res.statusCode === 200) res.status(500);
+        throw error;
+    }
+});
 
 // @desc    Forgot password
 // @route   POST /api/auth/forgot-password
@@ -233,4 +367,6 @@ module.exports = {
     googleCallback,
     forgotPassword,
     resetPassword,
+    sendOtp,
+    verifyOtp,
 };
